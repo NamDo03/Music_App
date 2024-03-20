@@ -34,6 +34,9 @@ android {
         viewBinding = true
         dataBinding = true
     }
+    viewBinding {
+        enable = true
+    }
 }
 
 dependencies {
@@ -47,4 +50,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation ("com.google.firebase:firebase-firestore:23.0.3")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+
 }

@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import com.example.music_app.models.CategoryModel;
 import com.example.music_app.models.SongModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -42,6 +46,37 @@ public class MainActivity extends AppCompatActivity {
         setupSection("section_1",binding.section1MainLayout,binding.section1Title,binding.section1RecyclerView);
         setupSection("section_2",binding.section2MainLayout,binding.section2Title,binding.section2RecyclerView);
         setupSection("section_3",binding.section3MainLayout,binding.section3Title,binding.section3RecyclerView);
+
+        binding.optionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu();
+            }
+        });
+    }
+
+    public void showPopupMenu() {
+        PopupMenu popupMenu = new PopupMenu(this, binding.optionBtn);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.option_menu, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.logout) {
+                    logout();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    public void logout() {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public void setupCategoryRecyclerView(List<CategoryModel> categoryList) {

@@ -65,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
             });
     }
 
+
+
+
     void setInProgress(Boolean inProgress) {
         if(inProgress) {
             binding.btnLogin.setVisibility(View.GONE);

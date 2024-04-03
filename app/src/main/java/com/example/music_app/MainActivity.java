@@ -15,6 +15,9 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.adapter.CategoryAdapter;
 import com.example.music_app.adapter.SectionSongListAdapter;
 import com.example.music_app.databinding.ActivityMainBinding;
@@ -54,7 +57,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showPlayerView();
+    }
 
+    private void showPlayerView() {
+        binding.playerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        SongModel currentSong = MyExoPlayer.getCurrentSong();
+        if (currentSong != null) {
+            binding.playerView.setVisibility(View.VISIBLE);
+            binding.songTitleTextView.setText("Now Playing: " + currentSong.getTitle());
+            RequestOptions options = new RequestOptions().transform(new RoundedCorners(32));
+            Glide.with(binding.songCoverImageView).load(currentSong.getCoverUrl()).apply(options).into(binding.songCoverImageView);
+        } else {
+            binding.playerView.setVisibility(View.GONE);
+        }
+    }
     public void showPopupMenu() {
         PopupMenu popupMenu = new PopupMenu(this, binding.optionBtn);
         MenuInflater inflater = popupMenu.getMenuInflater();

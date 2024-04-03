@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.music_app.databinding.ActivitySignupBinding;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.regex.Pattern;
 import android.util.Patterns;
@@ -56,15 +57,16 @@ public class SignupActivity extends AppCompatActivity {
 
     void createAccount(String email, String password) {
         setInProgress(true);
-        //save db
-        //Success
-        setInProgress(false);
-        Toast.makeText(getApplicationContext(), "Create account successfully", Toast.LENGTH_SHORT).show();
-        finish();
-        //Failed
-        setInProgress(false);
-        Toast.makeText(getApplicationContext(), "Create account failed", Toast.LENGTH_SHORT).show();
-
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener(authResult ->  {
+                setInProgress(false);
+                Toast.makeText(getApplicationContext(), "Create account successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            })
+            .addOnFailureListener(exception ->  {
+                setInProgress(false);
+                Toast.makeText(getApplicationContext(), "Create account failed", Toast.LENGTH_SHORT).show();
+            });
     }
 
     void setInProgress(Boolean inProgress) {

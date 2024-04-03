@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.music_app.databinding.ActivityLoginBinding;
 import com.example.music_app.databinding.ActivitySignupBinding;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.regex.Pattern;
 
@@ -51,17 +52,21 @@ public class LoginActivity extends AppCompatActivity {
 
     void loginAccount(String email, String password) {
         setInProgress(true);
-        //save db
-        //Success
-        setInProgress(false);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        //Failed
-        setInProgress(false);
-        Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
-
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener(authResult ->  {
+                setInProgress(false);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            })
+            .addOnFailureListener(exception ->  {
+                setInProgress(false);
+                Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
+            });
     }
+
+
+
 
     void setInProgress(Boolean inProgress) {
         if(inProgress) {
@@ -76,11 +81,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //check db login or not
-//        FirebaseAuth.getInstance().currentUser?.apply {
-//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

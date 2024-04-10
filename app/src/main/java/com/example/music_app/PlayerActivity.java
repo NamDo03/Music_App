@@ -1,14 +1,14 @@
 package com.example.music_app;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.view.View;
 import android.widget.Toast;
+
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.util.UnstableApi;
@@ -19,14 +19,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.databinding.ActivityPlayerBinding;
 import com.example.music_app.models.SongModel;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -129,22 +127,22 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
         Drawable defaultColor = binding.btnFavorite.getBackground();
-        checkInFavorite(currentSong.getId(), defaultColor);
+        checkInFavorite(currentSong.getId());
         binding.btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isFavorite) {
                     removeFromFavorite(currentSong.getId());
-                    checkInFavorite(currentSong.getId(), defaultColor);
+                    checkInFavorite(currentSong.getId());
                 } else {
                     addToFavorite(currentSong.getId());
-                    checkInFavorite(currentSong.getId(), defaultColor);
+                    checkInFavorite(currentSong.getId());
                 }
             }
         });
     }
 
-    public void checkInFavorite(String songId, Drawable defaultColor) {
+    public void checkInFavorite(String songId) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         String userName = user.getUid();
@@ -156,11 +154,11 @@ public class PlayerActivity extends AppCompatActivity {
             if (documentSnapshot.exists()) {
                 List<String> songs = (List<String>) documentSnapshot.get("songs");
                 if (songs != null && songs.contains(songId)) {
-                    binding.btnFavorite.setBackgroundColor(Color.GREEN);
+                    binding.btnFavorite.setImageResource(R.drawable.ic_heart_solid);
                     isFavorite = true;
                 }
                 else {
-                    binding.btnFavorite.setBackground(defaultColor);
+                    binding.btnFavorite.setImageResource(R.drawable.ic_heart_regular);
                     isFavorite = false;
                 }
             }

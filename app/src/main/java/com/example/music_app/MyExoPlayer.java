@@ -72,7 +72,7 @@ public class MyExoPlayer {
                     .addOnSuccessListener(documentSnapshot -> {
                         SongModel nextSongWithDetails = documentSnapshot.toObject(SongModel.class);
                         Log.d("MyExo","nextSong:"+ nextSongWithDetails);
-                        if (nextSongWithDetails != null) {
+                        if (nextSongWithDetails != null ) {
                             currentSongId = nextSongId;
                             Log.d("MyExo","nextsong:" + nextSongWithDetails.getTitle());
                             startPlaying(context, nextSongWithDetails);

@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 
@@ -19,11 +18,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.databinding.ActivityPlayerBinding;
 import com.example.music_app.models.SongModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PlayerActivity extends AppCompatActivity {
-    private List<SongModel> songList;
     private ActivityPlayerBinding binding;
     private ExoPlayer exoPlayer;
     private boolean isPlaying = false;
@@ -41,7 +36,6 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         initViews();
 
-        songList = new ArrayList<>();
         pausePlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,7 +50,12 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 MyExoPlayer.skipToNextSong(PlayerActivity.this);
-                updateSongInfo();
+            }
+        });
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MyExoPlayer.skipToPrevSong(PlayerActivity.this);
             }
         });
         handler = new Handler();
@@ -86,15 +85,6 @@ public class PlayerActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-//        SongModel currentSong = MyExoPlayer.getCurrentSong();
-//        if (currentSong != null) {
-//            songName.setText(currentSong.getTitle());
-//            artistName.setText(currentSong.getSubtitle());
-//            Glide.with(coverImage).load(currentSong.getCoverUrl())
-//                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(32)))
-//                    .into(coverImage);
-//            exoPlayer = MyExoPlayer.getInstance();
-//        }
         updateSongInfo();
     }
     private void initViews() {
@@ -108,10 +98,11 @@ public class PlayerActivity extends AppCompatActivity {
         pausePlay = findViewById(R.id.btn_play_pause);
         seekBar = findViewById(R.id.seekBar);
     }
-    @UnstableApi private void updateSongInfo() {
+
+    public void updateSongInfo() {
         SongModel currentSong = MyExoPlayer.getCurrentSong();
-        Log.d("Songs", "CurentSong:"+currentSong);
         if (currentSong != null) {
+            pausePlay.setImageResource(R.drawable.ic_pause);
             songName.setText(currentSong.getTitle());
             artistName.setText(currentSong.getSubtitle());
             Glide.with(coverImage).load(currentSong.getCoverUrl())
@@ -152,7 +143,9 @@ public class PlayerActivity extends AppCompatActivity {
             // Cập nhật thời gian đã chạy (currentTime) và tổng thời gian (totalTime)
             currentTime.setText(formatTime(currentPosition));
             totalTime.setText(formatTime(totalDuration));
-
+            if (currentPosition >= totalDuration) {
+                MyExoPlayer.skipToNextSong(PlayerActivity.this);
+            }
             // Cập nhật vị trí của SeekBar
             seekBar.setProgress(currentPosition);
             seekBar.setMax(totalDuration);

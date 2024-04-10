@@ -76,6 +76,30 @@ public class MyExoPlayer {
                             currentSongId = nextSongId;
                             Log.d("MyExo","nextsong:" + nextSongWithDetails.getTitle());
                             startPlaying(context, nextSongWithDetails);
+                            ((PlayerActivity) context).updateSongInfo();
+                        }
+                    });
+        }
+    }
+
+    public static void skipToPrevSong(Context context) {
+        if (songIdList != null && !songIdList.isEmpty()) {
+            int currentIndex = songIdList.indexOf(currentSongId);
+            int prevIndex = (currentIndex - 1) % songIdList.size();
+            String prevSongId = songIdList.get(prevIndex);
+            Log.d("MyExo","curSong:"+ currentIndex + " nextSong:"+ prevIndex + " size List:"+ songIdList.size());
+            Log.d("MyExo","nextSongId:"+ prevSongId);
+
+            FirebaseFirestore.getInstance().collection("songs")
+                    .document(prevSongId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        SongModel prevSongWithDetails = documentSnapshot.toObject(SongModel.class);
+                        Log.d("MyExo","nextSong:"+ prevSongWithDetails);
+                        if (prevSongWithDetails != null) {
+                            currentSongId = prevSongId;
+                            Log.d("MyExo","nextsong:" + prevSongWithDetails.getTitle());
+                            startPlaying(context, prevSongWithDetails);
+                            ((PlayerActivity) context).updateSongInfo();
                         }
                     });
         }

@@ -19,13 +19,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.adapter.CategoryAdapter;
+import com.example.music_app.adapter.FavoriteApdapter;
 import com.example.music_app.adapter.SectionSongListAdapter;
 import com.example.music_app.databinding.ActivityMainBinding;
 import com.example.music_app.models.CategoryModel;
+import com.example.music_app.models.FavoriteModel;
 import com.example.music_app.models.SongModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -94,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
                     logout();
                     return true;
                 }
+                if (item.getItemId() == R.id.favorite) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    FirebaseUser user = auth.getCurrentUser();
+                    String userName = user.getUid();
+                    setupFavorite(userName);
+                }
                 return false;
             }
         });
@@ -120,6 +129,18 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<CategoryModel> categoryList = queryDocumentSnapshots.toObjects(CategoryModel.class);
                         setupCategoryRecyclerView(categoryList);
+                    }
+                });
+    }
+    public void setupFavorite(String id) {
+        FirebaseFirestore.getInstance().collection("favorite")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    FavoriteModel favorite = documentSnapshot.toObject(FavoriteModel.class);
+                    if (favorite != null) {
+                        FavoriteActivity.setFavorite(favorite);
+                        Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                        startActivity(intent);
                     }
                 });
     }

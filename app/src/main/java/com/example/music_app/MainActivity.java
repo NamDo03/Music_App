@@ -14,14 +14,19 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.adapter.CategoryAdapter;
+import com.example.music_app.adapter.FavoriteApdapter;
 import com.example.music_app.adapter.SectionSongListAdapter;
 import com.example.music_app.databinding.ActivityMainBinding;
 import com.example.music_app.models.CategoryModel;
+import com.example.music_app.models.FavoriteModel;
 import com.example.music_app.models.SongModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -62,7 +67,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showPlayerView();
+    }
 
+    private void showPlayerView() {
+        binding.playerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        SongModel currentSong = MyExoPlayer.getCurrentSong();
+        if (currentSong != null) {
+            binding.playerView.setVisibility(View.VISIBLE);
+            binding.songTitleTextView.setText("Now Playing: " + currentSong.getTitle());
+            RequestOptions options = new RequestOptions().transform(new RoundedCorners(32));
+            Glide.with(binding.songCoverImageView).load(currentSong.getCoverUrl()).apply(options).into(binding.songCoverImageView);
+        } else {
+            binding.playerView.setVisibility(View.GONE);
+        }
+    }
     public void showPopupMenu() {
         PopupMenu popupMenu = new PopupMenu(this, binding.optionBtn);
         MenuInflater inflater = popupMenu.getMenuInflater();
@@ -74,6 +103,12 @@ public class MainActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.logout) {
                     logout();
                     return true;
+                }
+                if (item.getItemId() == R.id.favorite) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    FirebaseUser user = auth.getCurrentUser();
+                    String userName = user.getUid();
+                    setupFavorite(userName);
                 }
                 return false;
             }
@@ -101,6 +136,18 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<CategoryModel> categoryList = queryDocumentSnapshots.toObjects(CategoryModel.class);
                         setupCategoryRecyclerView(categoryList);
+                    }
+                });
+    }
+    public void setupFavorite(String id) {
+        FirebaseFirestore.getInstance().collection("favorite")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    FavoriteModel favorite = documentSnapshot.toObject(FavoriteModel.class);
+                    if (favorite != null) {
+                        FavoriteActivity.setFavorite(favorite);
+                        Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                        startActivity(intent);
                     }
                 });
     }

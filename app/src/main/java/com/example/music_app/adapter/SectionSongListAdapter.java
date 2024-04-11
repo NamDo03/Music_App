@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,20 +21,27 @@ import java.util.List;
 public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongListAdapter.MyViewHolder> {
 
     private List<String> songIdList;
+    private List<SongModel> songList;
+
+    public void setSongList(List<SongModel> songList) {
+        this.songList = songList;
+        notifyDataSetChanged(); // Update RecyclerView
+    }
 
     public SectionSongListAdapter(List<String> songIdList) {
         this.songIdList = songIdList;
     }
 
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         SectionSongListRecyclerRowBinding binding = SectionSongListRecyclerRowBinding.inflate(inflater, parent, false);
         return new MyViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         String songId = songIdList.get(position);
         holder.bindData(songId);
     }
@@ -43,6 +51,7 @@ public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongList
         return songIdList.size();
     }
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private SectionSongListRecyclerRowBinding binding;
 
@@ -51,14 +60,16 @@ public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongList
             this.binding = binding;
         }
 
+
         public void bindData(String songId) {
             FirebaseFirestore.getInstance().collection("songs")
                     .document(songId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         SongModel song = documentSnapshot.toObject(SongModel.class);
                         if (song != null) {
-                            binding.songTitleTextView.setText(song.getTitle());
-                            binding.songSubtitleTextView.setText(song.getSubtitle());
+                            // Set song title and artist in the same line
+                            String titleArtist = song.getTitle() + " - " + song.getSubtitle();
+                            binding.songTitleTextView.setText(titleArtist);
                             Glide.with(binding.songCoverImageView)
                                     .load(song.getCoverUrl())
                                     .apply(RequestOptions.bitmapTransform(new RoundedCorners(32)))
@@ -70,5 +81,6 @@ public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongList
                         }
                     });
         }
+
     }
 }

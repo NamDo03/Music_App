@@ -17,7 +17,8 @@ public class PlayerActivity extends AppCompatActivity {
     private ActivityPlayerBinding binding;
     private ExoPlayer exoPlayer;
 
-    @OptIn(markerClass = UnstableApi.class) @Override
+    @OptIn(markerClass = UnstableApi.class)
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityPlayerBinding.inflate(getLayoutInflater());
@@ -35,5 +36,6 @@ public class PlayerActivity extends AppCompatActivity {
             binding.playerControl.setPlayer(exoPlayer);
         }
     }
+
 
 }

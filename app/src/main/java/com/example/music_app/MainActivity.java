@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,10 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private CategoryAdapter categoryAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         networkConnection = new NetworkConnection();
 
@@ -55,10 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
         getCategories();
-        setupSection("section_1",binding.section1MainLayout,binding.section1Title,binding.section1RecyclerView);
-        setupSection("section_2",binding.section2MainLayout,binding.section2Title,binding.section2RecyclerView);
-        setupSection("section_3",binding.section3MainLayout,binding.section3Title,binding.section3RecyclerView);
+        setupSection("section_1", binding.section1MainLayout, binding.section1Title, binding.section1RecyclerView);
+        setupSection("section_2", binding.section2MainLayout, binding.section2Title, binding.section2RecyclerView);
+        setupSection("section_3", binding.section3MainLayout, binding.section3Title, binding.section3RecyclerView);
 
         binding.optionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 showPopupMenu();
             }
         });
+
     }
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -92,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             binding.playerView.setVisibility(View.GONE);
         }
     }
+
     public void showPopupMenu() {
         PopupMenu popupMenu = new PopupMenu(this, binding.optionBtn);
         MenuInflater inflater = popupMenu.getMenuInflater();
@@ -102,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     logout();
+                    return true;
+                } else if (item.getItemId() == R.id.app_bar_search) {
+                    Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                    startActivity(intent);
                     return true;
                 }
                 if (item.getItemId() == R.id.favorite) {

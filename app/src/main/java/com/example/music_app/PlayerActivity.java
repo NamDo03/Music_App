@@ -282,5 +282,4 @@ public class PlayerActivity extends AppCompatActivity {
         handler.removeCallbacks(runnable); // Dừng cập nhật SeekBar khi pause
     }
 
-
 }

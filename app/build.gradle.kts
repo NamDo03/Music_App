@@ -54,4 +54,6 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.3.0")
     implementation("androidx.media3:media3-ui:1.3.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.media:media:1.7.0")
+
 }

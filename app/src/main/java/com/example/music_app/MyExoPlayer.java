@@ -18,13 +18,15 @@ public class MyExoPlayer {
     private static List<String> songIdList = null;
 
     public static void setSongIdList(List<String> list) {
-         songIdList = list;
+        songIdList = list;
     }
+
     public static void setCurrentSongId(String songId) {
         currentSongId = songId;
     }
+
     public static SongModel getCurrentSong() {
-        Log.d("MyExo","currentSong:" +currentSong);
+        Log.d("MyExo", "currentSong:" + currentSong);
         return currentSong;
     }
 
@@ -40,6 +42,7 @@ public class MyExoPlayer {
         if (currentSong != song) {
             currentSong = song;
             if (currentSong != null && currentSong.getUrl() != null) {
+                NotificationUtils.showNotification(context.getApplicationContext(), getCurrentSong());
                 String url = currentSong.getUrl();
                 Log.d("MyExoPlayer", " URL: " + url);
                 MediaItem mediaItem = MediaItem.fromUri(url);
@@ -51,10 +54,10 @@ public class MyExoPlayer {
                 } else {
                     Log.e("ExoPlayer", "ExoPlayer instance is null!");
                 }
-            }else  {
+            } else {
                 Log.e("ExoPlayer", "Current song or its URL is null!");
             }
-        }else  {
+        } else {
             Log.d("ExoPlayer", "Song is already playing: " + currentSong.getTitle());
         }
     }
@@ -64,17 +67,17 @@ public class MyExoPlayer {
             int currentIndex = songIdList.indexOf(currentSongId);
             int nextIndex = (currentIndex + 1) % songIdList.size();
             String nextSongId = songIdList.get(nextIndex);
-            Log.d("MyExo","curSong:"+ currentIndex + " nextSong:"+ nextIndex + " size List:"+ songIdList.size());
-            Log.d("MyExo","nextSongId:"+ nextSongId);
+            Log.d("MyExo", "curSong:" + currentIndex + " nextSong:" + nextIndex + " size List:" + songIdList.size());
+            Log.d("MyExo", "nextSongId:" + nextSongId);
 
             FirebaseFirestore.getInstance().collection("songs")
                     .document(nextSongId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         SongModel nextSongWithDetails = documentSnapshot.toObject(SongModel.class);
-                        Log.d("MyExo","nextSong:"+ nextSongWithDetails);
-                        if (nextSongWithDetails != null ) {
+                        Log.d("MyExo", "nextSong:" + nextSongWithDetails);
+                        if (nextSongWithDetails != null) {
                             currentSongId = nextSongId;
-                            Log.d("MyExo","nextsong:" + nextSongWithDetails.getTitle());
+                            Log.d("MyExo", "nextsong:" + nextSongWithDetails.getTitle());
                             startPlaying(context, nextSongWithDetails);
                             ((PlayerActivity) context).updateSongInfo();
                         }
@@ -87,17 +90,17 @@ public class MyExoPlayer {
             int currentIndex = songIdList.indexOf(currentSongId);
             int prevIndex = (currentIndex - 1) % songIdList.size();
             String prevSongId = songIdList.get(prevIndex);
-            Log.d("MyExo","curSong:"+ currentIndex + " nextSong:"+ prevIndex + " size List:"+ songIdList.size());
-            Log.d("MyExo","nextSongId:"+ prevSongId);
+            Log.d("MyExo", "curSong:" + currentIndex + " nextSong:" + prevIndex + " size List:" + songIdList.size());
+            Log.d("MyExo", "nextSongId:" + prevSongId);
 
             FirebaseFirestore.getInstance().collection("songs")
                     .document(prevSongId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         SongModel prevSongWithDetails = documentSnapshot.toObject(SongModel.class);
-                        Log.d("MyExo","nextSong:"+ prevSongWithDetails);
+                        Log.d("MyExo", "nextSong:" + prevSongWithDetails);
                         if (prevSongWithDetails != null) {
                             currentSongId = prevSongId;
-                            Log.d("MyExo","nextsong:" + prevSongWithDetails.getTitle());
+                            Log.d("MyExo", "nextsong:" + prevSongWithDetails.getTitle());
                             startPlaying(context, prevSongWithDetails);
                             ((PlayerActivity) context).updateSongInfo();
                         }

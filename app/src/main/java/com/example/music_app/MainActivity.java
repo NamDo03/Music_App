@@ -1,13 +1,9 @@
 package com.example.music_app;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,17 +13,22 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.adapter.CategoryAdapter;
+import com.example.music_app.adapter.FavoriteApdapter;
 import com.example.music_app.adapter.SectionSongListAdapter;
 import com.example.music_app.databinding.ActivityMainBinding;
 import com.example.music_app.models.CategoryModel;
+import com.example.music_app.models.FavoriteModel;
 import com.example.music_app.models.SongModel;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private NetworkConnection networkConnection;
     private ActivityMainBinding binding;
     private CategoryAdapter categoryAdapter;
 
@@ -46,8 +49,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        networkConnection = new NetworkConnection();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        if (networkConnection.isNetworkAvailable(this)) {
+            setContentView(binding.getRoot());
+        } else {
+            setContentView(R.layout.network_error_layout);
+
+        }
 
 
         getCategories();
@@ -107,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 }
+                if (item.getItemId() == R.id.favorite) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    FirebaseUser user = auth.getCurrentUser();
+                    String userName = user.getUid();
+                    setupFavorite(userName);
+                }
                 return false;
             }
         });
@@ -136,7 +152,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
+    public void setupFavorite(String id) {
+        FirebaseFirestore.getInstance().collection("favorite")
+                .document(id)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    FavoriteModel favorite = documentSnapshot.toObject(FavoriteModel.class);
+                    if (favorite != null) {
+                        FavoriteActivity.setFavorite(favorite);
+                        Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                        startActivity(intent);
+                    }
+                });
+    }
     public void setupSection(String id, RelativeLayout mainLayout, TextView titleView, RecyclerView recyclerView) {
         FirebaseFirestore.getInstance().collection("sections")
                 .document(id)
@@ -182,5 +209,18 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                 });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkConnection,intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(networkConnection);
     }
 }

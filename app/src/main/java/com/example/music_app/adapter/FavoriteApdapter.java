@@ -1,7 +1,6 @@
 package com.example.music_app.adapter;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,32 +12,28 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.MyExoPlayer;
 import com.example.music_app.PlayerActivity;
-import com.example.music_app.databinding.SongListItemRecyclerRowBinding;
+import com.example.music_app.databinding.FavoriteSongListRecyclerRowBinding;
 import com.example.music_app.models.SongModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.MyViewHolder> {
-
+public class FavoriteApdapter extends RecyclerView.Adapter<FavoriteApdapter.MyViewHolder>{
     private List<String> songIdList;
-    private static final String TAG = "SongsListAdapter";
 
-    public SongsListAdapter(List<String> songIdList) {
-        Log.d(TAG, "Song ID List: " + songIdList.toString());
+    public FavoriteApdapter(List<String> songIdList) {
         this.songIdList = songIdList;
-        MyExoPlayer.setSongIdList(songIdList);
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FavoriteApdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SongListItemRecyclerRowBinding binding = SongListItemRecyclerRowBinding.inflate(inflater, parent, false);
-        return new MyViewHolder(binding);
+        FavoriteSongListRecyclerRowBinding binding = FavoriteSongListRecyclerRowBinding.inflate(inflater, parent, false);
+        return new FavoriteApdapter.MyViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(FavoriteApdapter.MyViewHolder holder, int position) {
         String songId = songIdList.get(position);
         holder.bindData(songId);
     }
@@ -50,9 +45,9 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private SongListItemRecyclerRowBinding binding;
+        private FavoriteSongListRecyclerRowBinding binding;
 
-        public MyViewHolder(SongListItemRecyclerRowBinding binding) {
+        public MyViewHolder(FavoriteSongListRecyclerRowBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
@@ -72,8 +67,6 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.MyVi
                             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    Log.d(TAG, "Song:"+songId);
-                                    MyExoPlayer.setCurrentSongId(songId);
                                     MyExoPlayer.startPlaying(view.getContext(), song);
                                     view.getContext().startActivity(new Intent(view.getContext(), PlayerActivity.class));
                                 }

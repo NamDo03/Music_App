@@ -1,7 +1,6 @@
 package com.example.music_app.adapter;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,9 @@ import java.util.List;
 public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.MyViewHolder> {
 
     private List<String> songIdList;
-    private static final String TAG = "SongsListAdapter";
 
     public SongsListAdapter(List<String> songIdList) {
-        Log.d(TAG, "Song ID List: " + songIdList.toString());
         this.songIdList = songIdList;
-        MyExoPlayer.setSongIdList(songIdList);
     }
 
     @Override
@@ -72,8 +68,6 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.MyVi
                             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    Log.d(TAG, "Song:"+songId);
-                                    MyExoPlayer.setCurrentSongId(songId);
                                     MyExoPlayer.startPlaying(view.getContext(), song);
                                     view.getContext().startActivity(new Intent(view.getContext(), PlayerActivity.class));
                                 }

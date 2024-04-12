@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ public class PlayerActivity extends AppCompatActivity {
     ImageView coverImage;
     SeekBar seekBar;
     ImageView pausePlay, nextBtn, prevBtn;
+    ImageButton backBtn;
     boolean isFavorite;
 
     @OptIn(markerClass = UnstableApi.class)
@@ -100,6 +102,14 @@ public class PlayerActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         updateSongInfo();
     }
     private void initViews() {
@@ -112,6 +122,7 @@ public class PlayerActivity extends AppCompatActivity {
         prevBtn = findViewById(R.id.btn_previous);
         pausePlay = findViewById(R.id.btn_play_pause);
         seekBar = findViewById(R.id.seekBar);
+        backBtn = findViewById(R.id.btn_back);
     }
 
     public void updateSongInfo() {

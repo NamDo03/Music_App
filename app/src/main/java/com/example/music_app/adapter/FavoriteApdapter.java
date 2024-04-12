@@ -22,6 +22,7 @@ public class FavoriteApdapter extends RecyclerView.Adapter<FavoriteApdapter.MyVi
     private List<String> songIdList;
 
     public FavoriteApdapter(List<String> songIdList) {
+        MyExoPlayer.setSongIdList(songIdList);
         this.songIdList = songIdList;
     }
 
@@ -67,6 +68,7 @@ public class FavoriteApdapter extends RecyclerView.Adapter<FavoriteApdapter.MyVi
                             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    MyExoPlayer.setCurrentSongId(songId);
                                     MyExoPlayer.startPlaying(view.getContext(), song);
                                     view.getContext().startActivity(new Intent(view.getContext(), PlayerActivity.class));
                                 }

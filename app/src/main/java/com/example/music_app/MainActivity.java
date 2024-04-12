@@ -7,26 +7,26 @@ import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.music_app.adapter.CategoryAdapter;
-import com.example.music_app.adapter.FavoriteApdapter;
 import com.example.music_app.adapter.SectionSongListAdapter;
 import com.example.music_app.databinding.ActivityMainBinding;
 import com.example.music_app.models.CategoryModel;
 import com.example.music_app.models.FavoriteModel;
 import com.example.music_app.models.SongModel;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private NetworkConnection networkConnection;
     private ActivityMainBinding binding;
     private CategoryAdapter categoryAdapter;
-
-
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +49,34 @@ public class MainActivity extends AppCompatActivity {
 
 
         networkConnection = new NetworkConnection();
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         if (networkConnection.isNetworkAvailable(this)) {
             setContentView(binding.getRoot());
         } else {
             setContentView(R.layout.network_error_layout);
-
         }
 
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.home_nav) {
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    return true;
+                } else if (itemId == R.id.search_nav) {
+                    startActivity(new Intent(MainActivity.this, SearchActivity.class));
+                    return true;
+                } else if (itemId == R.id.favorite_nav) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    FirebaseUser user = auth.getCurrentUser();
+                    String userName = user.getUid();
+                    setupFavorite(userName);
+                }
+
+                return false;
+            }
+        });
 
         getCategories();
         setupSection("section_1", binding.section1MainLayout, binding.section1Title, binding.section1RecyclerView);
@@ -112,16 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.logout) {
                     logout();
                     return true;
-                } else if (item.getItemId() == R.id.app_bar_search) {
-                    Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                    startActivity(intent);
-                    return true;
-                }
-                if (item.getItemId() == R.id.favorite) {
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    FirebaseUser user = auth.getCurrentUser();
-                    String userName = user.getUid();
-                    setupFavorite(userName);
                 }
                 return false;
             }

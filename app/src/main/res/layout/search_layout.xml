@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blueDark"
+    android:background="@color/main"
     android:padding="16dp"
     tools:context=".SearchActivity">
 
@@ -24,7 +24,7 @@
         <EditText
             android:id="@+id/search_edit_text"
             android:layout_width="343dp"
-            android:layout_height="35dp"
+            android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"

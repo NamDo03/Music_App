@@ -1,6 +1,7 @@
 package com.example.music_app.adapter;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -29,7 +30,9 @@ public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongList
     }
 
     public SectionSongListAdapter(List<String> songIdList) {
+        Log.d("TAG", "Song ID List: " + songIdList.toString());
         this.songIdList = songIdList;
+        MyExoPlayer.setSongIdList(songIdList);
     }
 
     @NonNull
@@ -75,6 +78,7 @@ public class SectionSongListAdapter extends RecyclerView.Adapter<SectionSongList
                                     .apply(RequestOptions.bitmapTransform(new RoundedCorners(32)))
                                     .into(binding.songCoverImageView);
                             binding.getRoot().setOnClickListener(view -> {
+                                MyExoPlayer.setCurrentSongId(songId);
                                 MyExoPlayer.startPlaying(view.getContext(), song);
                                 view.getContext().startActivity(new Intent(view.getContext(), PlayerActivity.class));
                             });

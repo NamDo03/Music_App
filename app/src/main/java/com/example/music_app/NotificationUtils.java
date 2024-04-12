@@ -1,19 +1,15 @@
 package com.example.music_app;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.music_app.PlayerActivity;
-import com.example.music_app.R;
 import com.example.music_app.models.SongModel;
 
 public class NotificationUtils {
@@ -32,19 +28,6 @@ public class NotificationUtils {
         Intent intent = new Intent(context, PlayerActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
 
-        // Create action intents
-        Intent previousIntent = new Intent(context, NotificationActionReceiver.class);
-        previousIntent.setAction("PREVIOUS_ACTION");
-        PendingIntent previousPendingIntent = PendingIntent.getBroadcast(context, 0, previousIntent, PendingIntent.FLAG_MUTABLE);
-
-        Intent pauseIntent = new Intent(context, NotificationActionReceiver.class);
-        pauseIntent.setAction("PAUSE_ACTION");
-        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, pauseIntent, PendingIntent.FLAG_MUTABLE);
-
-        Intent nextIntent = new Intent(context, NotificationActionReceiver.class);
-        nextIntent.setAction("NEXT_ACTION");
-        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 0, nextIntent, PendingIntent.FLAG_MUTABLE);
-
         // Create a notification builder
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(songModel.getTitle())
@@ -55,13 +38,9 @@ public class NotificationUtils {
                 .setAutoCancel(false);
 
         // Add playback controls (play, pause, next, previous) using MediaStyle
-        builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2)
+        builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(null)
                 .setMediaSession(null));
 
-        // Add action buttons for playback controls
-        builder.addAction(R.drawable.ic_prev, "Previous", previousPendingIntent);
-        builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
-        builder.addAction(R.drawable.ic_next, "Next", nextPendingIntent);
 
         // Show notification
         notificationManager.notify(NOTIFICATION_ID, builder.build());

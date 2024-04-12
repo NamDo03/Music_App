@@ -105,7 +105,7 @@ public class SearchActivity extends AppCompatActivity {
         } else {
             // Áp dụng bộ lọc
             for (SongModel song : allSongsList) {
-                if (song.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
+                if (song.getTitle().toLowerCase().contains(searchText.toLowerCase()) || song.getSubtitle().toLowerCase().contains(searchText.toLowerCase())) {
                     filteredList.add(song);
                     Log.d("SearchActivity", "Song title: " + song.getTitle());
                 }

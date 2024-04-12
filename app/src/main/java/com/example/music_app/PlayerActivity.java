@@ -96,10 +96,12 @@ public class PlayerActivity extends AppCompatActivity {
 
             // Xử lý các sự kiện khác của SeekBar
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
 
@@ -112,6 +114,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         updateSongInfo();
     }
+
     private void initViews() {
         songName = findViewById(R.id.song_name);
         artistName = findViewById(R.id.artist_name);
@@ -167,8 +170,7 @@ public class PlayerActivity extends AppCompatActivity {
                 if (songs != null && songs.contains(songId)) {
                     binding.btnFavorite.setImageResource(R.drawable.ic_heart_solid);
                     isFavorite = true;
-                }
-                else {
+                } else {
                     binding.btnFavorite.setImageResource(R.drawable.ic_heart_regular);
                     isFavorite = false;
                 }
@@ -232,6 +234,7 @@ public class PlayerActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Failed to remove song from favorites", Toast.LENGTH_SHORT).show();
                 });
     }
+
     private void pausePlayback() {
         if (exoPlayer != null) {
             exoPlayer.pause();
@@ -256,6 +259,7 @@ public class PlayerActivity extends AppCompatActivity {
             // Cập nhật giao diện người dùng và trạng thái của ExoPlayer
         }
     }
+
     private void updateSeekBar() {
         if (exoPlayer != null && exoPlayer.getDuration() > 0) {
             int currentPosition = (int) exoPlayer.getCurrentPosition();
@@ -282,11 +286,13 @@ public class PlayerActivity extends AppCompatActivity {
 
         return String.format("%02d:%02d", minutes, seconds);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         handler.postDelayed(runnable, 1000); // Bắt đầu cập nhật SeekBar sau khi resume
     }
+
     @Override
     protected void onPause() {
         super.onPause();

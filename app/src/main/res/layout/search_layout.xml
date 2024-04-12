@@ -32,7 +32,12 @@
             android:layout_toEndOf="@id/search_icon"
             android:background="@color/white"
             android:hint="Search"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:textSize="14sp" />
 
 
     </RelativeLayout>
